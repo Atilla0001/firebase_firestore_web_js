@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Realtime Database</title>
+    <style>
+        label {
+            display: inline-block;
+            width: 80px;
+        }
+
+        input,
+        select {
+            width: 120px;
+        }
+    </style>
+
+</head>
+
+<body>
+<h1 style="color: blue; text-align: center;">XXXX Üniversitesi Öğrenci Kayıt Sistemi</h1>
+<div style="text-align: center; justify-content: center; ">
+      <label>İsim</label> <input id="Namebox" type="text"> <br><br>
+    <label>OgrNO</label> <input id="Rollbox" type="text"> <br><br>
+    <label>Bölüm</label> <input id="Secbox" type="text"> <br><br>
+    <label>Cinsiyet</label>
+    <select id="Genbox">
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+    </select>
+    <hr style="width: 230px;">
+
+    <button id="Insbtn" style="color: green;">Insert</button>
+    <button id="Selbtn">Select</button>
+    <button id="Updbtn" style="color: blue;">Update</button>
+    <button id="Delbtn" style="color: red;">Delete</button>
+</div>
+  
+
+    <!-- Firebase kodları-->
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDHGWGfRNrceHwjb9chDLUBgEJSOsUHHsI",
+            authDomain: "bulutbilisim-ee197.firebaseapp.com",
+            projectId: "bulutbilisim-ee197",
+            storageBucket: "bulutbilisim-ee197.appspot.com",
+            messagingSenderId: "1010381373743",
+            appId: "1:1010381373743:web:ab38e028f329d80377e1da"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+
+        import { getDatabase,get, ref, set, child, update, remove }
+            from "https://www.gstatic.com/firebasejs/9.1.0/firebase-database.js";
+
+        const db = getDatabase();
+        var namebox = document.getElementById("Namebox");
+        var rollbox = document.getElementById("Rollbox");
+        var secbox = document.getElementById("Secbox");
+        var genbox = document.getElementById("Genbox");
+
+        var insBtn = document.getElementById("Insbtn");
+        var selBtn = document.getElementById("Selbtn");
+        var updBtn = document.getElementById("Updbtn");
+        var delBtn = document.getElementById("Delbtn");
+
+        function InsertData() {
+            set(ref(db, "TheStudents/" + rollbox.value), {
+                NameOfStd: namebox.value,
+                RollNo: rollbox.value,
+                Section: secbox.value,
+                Gender: genbox.value
+            })
+                .then(() => {
+                    alert("Data başarıyla kaydedildi")
+                })
+                .catch((error) => {
+                    alert("Başarısız Deneme" + error)
+                });
+        }
+
+
+//////////////////////////////  Select
+
+function SelectData(){
+    const dbref = ref(db);
+get(child(dbref, "TheStudents/" + rollbox.value)).then((snapshot)=>{
+    if(snapshot.exists()){
+        namebox.value = snapshot.val().NameOfStd;
+        secbox.value = snapshot.val().Section;
+        genbox.value = snapshot.val().Gender;
+    }
+else{
+    alert("Veri bulunamadı")
+}
+
+
+})
+.catch((error)=>{
+    alert("Başarısız Deneme" + error)
+})
+
+}
+   
+//////////////////////////// Update
+
+function UpdateData(){
+    update(ref(db, "TheStudents/" + rollbox.value), {
+                NameOfStd: namebox.value,
+                Section: secbox.value,
+                Gender: genbox.value
+            })
+                .then(() => {
+                    alert("Data başarıyla güncellendi")
+                })
+                .catch((error) => {
+                    alert("Başarısız Deneme" + error)
+                });
+}
+
+
+////////////////////////////////// delete
+function DeleteData(){
+    remove(ref(db, "TheStudents/" + rollbox.value))
+                .then(() => {
+                    alert("Data başarıyla silindi")
+                })
+                .catch((error) => {
+                    alert("Başarısız Deneme" + error)
+                });
+
+}
+
+
+
+        /////////////////////////////////////// Listener
+        insBtn.addEventListener('click', InsertData);
+        selBtn.addEventListener('click', SelectData);
+        updBtn.addEventListener('click', InsertData);
+        delBtn.addEventListener('click', DeleteData);
+
+    </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
